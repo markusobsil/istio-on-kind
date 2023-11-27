@@ -1,0 +1,28 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: ingress-127-0-0-1-nip-io
+spec:
+  selector:
+    app: istio-ingress
+  servers:
+    - hosts:
+        - 'ingress.127-0-0-1.nip.io'
+        - 'ingress.127.0.0.1.nip.io'
+      port:
+        name: https-443
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: gateway-tls
+    - hosts:
+        - 'ingress.127-0-0-1.nip.io'
+        - 'ingress.127.0.0.1.nip.io'
+      port:
+        name: http
+        number: 80
+        protocol: HTTP2
+      tls:
+        httpsRedirect: true
