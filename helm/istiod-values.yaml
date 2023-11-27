@@ -1,3 +1,4 @@
+---
 pilot:
   autoscaleEnabled: false
   nodeSelector:

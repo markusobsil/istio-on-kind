@@ -32,6 +32,16 @@ deploy-istio-ingress: check-istiod
 	@helm install istio-ingress istio/gateway --create-namespace --namespace $(ISTIO_INGRESS_NS) \
 		--version $(ISTIO_VERSION) --values helm/istio-ingress-values.yaml
 
+generate-ingress-cert:
+	@openssl req -x509 -nodes -days 7 -newkey rsa:2048 -keyout ingress.key -out ingress.crt -subj \
+        "/CN=Makefile/O=istio-on-kind" --addext "subjectAltName = DNS:ingress.127-0-0-1.nip.io, \
+        DNS:ingress.127.0.0.1.nip.io"
+	@kubectl create secret tls --namespace $(ISTIO_INGRESS_NS) gateway-tls --key ingress.key --cert ingress.crt
+	@rm ingress.key ingress.crt
+
+configure-isto-ingress: generate-ingress-cert
+	@kubectl apply --namespace $(ISTIO_INGRESS_NS) -f manifests/istio-ingress/gateway.yaml
+
 remove-istio-ingress:
 	@scripts/print_header.sh "Remove istio ingress gateway"
 	@helm uninstall istio-ingress --namespace $(ISTIO_INGRESS_NS)

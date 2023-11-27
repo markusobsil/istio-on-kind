@@ -1,1 +1,3 @@
 kubeconfig
+ingress.crt
+ingress.key
