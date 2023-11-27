@@ -1,0 +1,33 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: istio
+networking:
+  apiServerAddress: "127.0.0.1"
+  apiServerPort: 6443
+  podSubnet: "10.244.0.0/16"
+  serviceSubnet: "10.96.0.0/12"
+nodes:
+- role: control-plane
+  labels:
+    topology.kubernetes.io/zone: us-east-1a
+    ingress-ready: false
+- role: worker
+  labels:
+    topology.kubernetes.io/zone: us-east-1a
+    ingress-ready: true
+    istio-ingress: true
+    istio-egress: true
+    istio-controlplane: true
+  extraPortMappings:
+  - containerPort: 30000
+    hostPort: 8080
+    listenAddress: "127.0.0.1"
+    protocol: TCP
+  - containerPort: 30001
+    hostPort: 8443
+    listenAddress: "127.0.0.1"
+    protocol: TCP
+  - containerPort: 30002
+    hostPort: 15021
+    listenAddress: "127.0.0.1"
+    protocol: TCP
