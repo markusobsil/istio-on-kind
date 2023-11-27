@@ -1,0 +1,4 @@
+pilot:
+  autoscaleEnabled: false
+  nodeSelector:
+    istio-controlplane: "true"
