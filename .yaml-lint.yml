@@ -1,0 +1,26 @@
+---
+extends: default
+rules:
+  braces:
+    max-spaces-inside: 1
+  brackets:
+    min-spaces-inside: 1
+    max-spaces-inside: 1
+  comments:
+    min-spaces-from-content: 1
+  document-start: disable
+  document-start:
+    present: true
+    level: error
+  quoted-strings:
+    quote-type: single
+    required: only-when-needed
+  indentation:
+    indent-sequences: consistent
+  line-length: disable
+  colons:
+    max-spaces-before: 0
+  empty-lines:
+    max: 0
+    ignore: kuttl-test.yaml
+  trailing-spaces: {}
