@@ -4,7 +4,7 @@ ISTIO_INGRESS_NS="istio-ingress"
 ISTIO_EGRESS_NS="istio-egress"
 
 .PHONY: all
-all: create-cluster deploy-istio-cp deploy-istio-ingress
+all: create-cluster deploy-istio
 
 create-cluster:
 	@scripts/print_header.sh "Create KinD cluster"
@@ -17,6 +17,8 @@ clean:
 	@kind delete cluster --name istio
 	@rm kubeconfig
 
+deploy-istio: deploy-istio-cp deploy-istio-ingress configure-isto-ingress deploy-istio-egress
+
 deploy-istio-cp:
 	@scripts/print_header.sh "Deploy istio control plane"
 	@helm install istio-base istio/base --create-namespace --namespace $(ISTIO_CP_NS) --version $(ISTIO_VERSION)
@@ -25,12 +27,14 @@ deploy-istio-cp:
 
 check-istiod:
 	@scripts/print_header.sh "Checking status of istiod pods"
-	@scripts/check_istiod.sh $(ISTIO_CP_NS)
+	@scripts/check_pod.sh $(ISTIO_CP_NS) app=istiod
 
 deploy-istio-ingress: check-istiod
 	@scripts/print_header.sh "Deploy istio ingress gateway"
 	@helm install istio-ingress istio/gateway --create-namespace --namespace $(ISTIO_INGRESS_NS) \
 		--version $(ISTIO_VERSION) --values helm/istio-ingress-values.yaml
+	@scripts/print_header.sh "Checking status of istio-ingress pods"
+	@scripts/check_pod.sh $(ISTIO_INGRESS_NS) app=istio-ingress
 
 generate-ingress-cert:
 	@openssl req -x509 -nodes -days 7 -newkey rsa:2048 -keyout ingress.key -out ingress.crt -subj \
@@ -49,6 +53,8 @@ remove-istio-ingress:
 deploy-istio-egress: check-istiod
 	@scripts/print_header.sh "Deploy istio egress gateway"
 	@helm install istio-egress istio/gateway --create-namespace --namespace $(ISTIO_EGRESS_NS) --version $(ISTIO_VERSION)
+	@scripts/print_header.sh "Checking status of istio-egress pods"
+	@scripts/check_pod.sh $(ISTIO_EGRESS_NS) app=istio-egress
 
 remove-istio-egress:
 	@scripts/print_header.sh "Remove istio egress gateway"
