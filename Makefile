@@ -1,4 +1,5 @@
 ISTIO_VERSION="1.19.3"
+ISTIO_HELM_REPO="https://istio-release.storage.googleapis.com/charts"
 ISTIO_CP_NS="istio-system"
 ISTIO_INGRESS_NS="istio-ingress"
 ISTIO_EGRESS_NS="istio-egress"
@@ -21,8 +22,9 @@ deploy-istio: deploy-istio-cp deploy-istio-ingress configure-isto-ingress deploy
 
 deploy-istio-cp:
 	@scripts/print_header.sh "Deploy istio control plane"
-	@helm install istio-base istio/base --create-namespace --namespace $(ISTIO_CP_NS) --version $(ISTIO_VERSION)
-	@helm install istiod istio/istiod --namespace $(ISTIO_CP_NS) --version $(ISTIO_VERSION) \
+	@helm install istio-base --repo $(ISTIO_HELM_REPO) base --create-namespace --namespace $(ISTIO_CP_NS) \
+        --version $(ISTIO_VERSION)
+	@helm install istiod --repo $(ISTIO_HELM_REPO) istiod --namespace $(ISTIO_CP_NS) --version $(ISTIO_VERSION) \
 		--values helm/istiod-values.yaml
 
 check-istiod:
@@ -31,7 +33,7 @@ check-istiod:
 
 deploy-istio-ingress: check-istiod
 	@scripts/print_header.sh "Deploy istio ingress gateway"
-	@helm install istio-ingress istio/gateway --create-namespace --namespace $(ISTIO_INGRESS_NS) \
+	@helm install istio-ingress --repo $(ISTIO_HELM_REPO) gateway --create-namespace --namespace $(ISTIO_INGRESS_NS) \
 		--version $(ISTIO_VERSION) --values helm/istio-ingress-values.yaml
 	@scripts/print_header.sh "Checking status of istio-ingress pods"
 	@scripts/check_pod.sh $(ISTIO_INGRESS_NS) app=istio-ingress
@@ -52,7 +54,8 @@ remove-istio-ingress:
 
 deploy-istio-egress: check-istiod
 	@scripts/print_header.sh "Deploy istio egress gateway"
-	@helm install istio-egress istio/gateway --create-namespace --namespace $(ISTIO_EGRESS_NS) --version $(ISTIO_VERSION)
+	@helm install istio-egress --repo $(ISTIO_HELM_REPO) gateway --create-namespace --namespace $(ISTIO_EGRESS_NS) \
+        --version $(ISTIO_VERSION)
 	@scripts/print_header.sh "Checking status of istio-egress pods"
 	@scripts/check_pod.sh $(ISTIO_EGRESS_NS) app=istio-egress
 
