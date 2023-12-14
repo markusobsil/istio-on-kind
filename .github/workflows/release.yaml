@@ -16,6 +16,14 @@ jobs:
           fetch-depth: '0'
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.67.0
+        id: tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
+      - name: Create release
+        uses: elgohr/Github-Release-Action@v5
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        with:
+          title: istio-on-kind-${{ steps.tag.outputs.new_tag }}
