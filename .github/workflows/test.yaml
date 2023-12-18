@@ -14,13 +14,14 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          sudo curl -Lo kind https://github.com/kubernetes-sigs/kind/releases/download/v0.20.0/kind-linux-amd64
-          sudo chmod +x kind
-          sudo curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-          sudo chmod +x get_helm.sh
-          sudo curl  -fsSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz" -o helm.tar.gz
-          sudo tar -xzf helm.tar.gz --strip-components=1
-          sudo chmod +x helm
+          mkdir ~/bin
+          mkdir ~/tmp
+          curl -Lo ~/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/v0.20.0/kind-linux-amd64
+          chmod +x ~/bin/kind
+          curl  -fsSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz" -o ~/tmp/helm.tar.gz
+          tar -xzf ~/tmp/helm.tar.gz --strip-components=1
+          chmod +x ~/tmp/helm
+          cp ~/tmp/helm ~/bin/helm
       - name: Start cluster
         run: make
       - name: Stop cluster
