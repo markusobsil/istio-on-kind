@@ -9,14 +9,11 @@ all: create-cluster deploy-istio
 
 create-cluster:
 	@scripts/print_header.sh "Create KinD cluster"
-	@touch kubeconfig
-	@chmod 600 kubeconfig
-	@KUBECONFIG=kubeconfig kind create cluster --config ./kind/kind-config-istio.yaml
+	@kind create cluster --config ./kind/kind-config-istio.yaml
 
 clean:
 	@scripts/print_header.sh "Delete KinD cluster"
 	@kind delete cluster --name istio
-	@rm kubeconfig
 
 deploy-istio: deploy-istio-cp deploy-istio-ingress configure-isto-ingress deploy-istio-egress
 
