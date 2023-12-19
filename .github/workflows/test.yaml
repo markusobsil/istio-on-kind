@@ -18,7 +18,7 @@ jobs:
           mkdir ~/tmp
           curl -Lo ~/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/v0.20.0/kind-linux-amd64
           chmod +x ~/bin/kind
-          curl  -fsSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz" -o ~/tmp/helm.tar.gz
+          curl  -fsSL "https://get.helm.sh/helm-v3.13.3-linux-amd64.tar.gz" -o ~/tmp/helm.tar.gz
           tar -xzf ~/tmp/helm.tar.gz --strip-components=1
           chmod +x ~/tmp/helm
           cp ~/tmp/helm ~/bin/helm
