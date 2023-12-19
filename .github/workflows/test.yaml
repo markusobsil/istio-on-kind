@@ -1,0 +1,28 @@
+---
+name: Test
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          mkdir ~/bin
+          mkdir ~/tmp
+          curl -Lo ~/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/v0.20.0/kind-linux-amd64
+          chmod +x ~/bin/kind
+          curl  -fsSL "https://get.helm.sh/helm-v3.13.3-linux-amd64.tar.gz" -o ~/tmp/helm.tar.gz
+          tar -xzf ~/tmp/helm.tar.gz -C ~/tmp
+          cp ~/tmp/linux-amd64/helm ~/bin/helm
+          chmod +x ~/bin/helm
+      - name: Start cluster
+        run: make
+      - name: Stop cluster
+        run: make clean
