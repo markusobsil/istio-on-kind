@@ -19,7 +19,8 @@ jobs:
           curl -Lo ~/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/v0.20.0/kind-linux-amd64
           chmod +x ~/bin/kind
           curl  -fsSL "https://get.helm.sh/helm-v3.13.3-linux-amd64.tar.gz" -o ~/tmp/helm.tar.gz
-          tar -xzf ~/tmp/helm.tar.gz -C ~/bin
+          tar -xzf ~/tmp/helm.tar.gz -C ~/tmp
+          cp ~/tmp/linux-amd64/helm ~/bin/helm
           chmod +x ~/bin/helm
       - name: Start cluster
         run: make
