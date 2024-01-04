@@ -73,5 +73,7 @@ remove-istio-cp:
 deploy-webapp:
 	@scripts/print_header.sh "Deploy Web App and cURL traffic generator"
 	@kubectl apply -f manifests/web/web.yaml
+	@scripts/check_pod.sh web app=web
 	@kubectl apply -f manifests/web/vs.yaml
 	@kubectl apply -f manifests/traffic/traffic.yaml
+	@scripts/check_pod.sh traffic app=traffic
