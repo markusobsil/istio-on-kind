@@ -8,7 +8,7 @@ spec:
   hosts:
     - web.127.0.0.1.nip.io
   gateways:
-    - istio-ingress/nip-io
+    - istio-ingress/default
   http:
     - route:
         - destination:

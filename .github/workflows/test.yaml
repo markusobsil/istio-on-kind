@@ -28,6 +28,6 @@ jobs:
         run: |
           make deploy-webapp
           kubectl get secrets -n istio-ingress gateway-tls -o jsonpath='{.data.tls\.crt}' | base64 -d > tls.crt
-          curl --fail --cacert tls.crt https://web.127.0.0.1.nip.io:8443 -I -v
+          curl --fail --cacert tls.crt https://web.127.0.0.1.nip.io:8443 -I
       - name: Stop cluster
         run: make clean
