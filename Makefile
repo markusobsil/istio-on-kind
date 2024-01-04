@@ -42,7 +42,7 @@ deploy-istio-ingress: check-istiod
 
 generate-ingress-cert:
 	@openssl req -x509 -nodes -days 7 -newkey rsa:2048 -keyout web.key -out web.crt -subj \
-        "/CN=Makefile/O=istio-on-kind" --addext "subjectAltName = DNS:web.127-0-0-1.nip.io"
+        "/CN=Makefile/O=istio-on-kind" --addext "subjectAltName = DNS:web.127.0.0.1.nip.io"
 	@kubectl create secret tls --namespace $(ISTIO_INGRESS_NS) gateway-tls --key web.key --cert web.crt
 	@rm web.key web.crt
 
