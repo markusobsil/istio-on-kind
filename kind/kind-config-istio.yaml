@@ -21,14 +21,14 @@ nodes:
       istio-controlplane: true
     extraPortMappings:
       - containerPort: 30000
-        hostPort: 8080
+        hostPort: 15021
         listenAddress: "127.0.0.1"
         protocol: TCP
       - containerPort: 30001
-        hostPort: 8443
+        hostPort: 8080
         listenAddress: "127.0.0.1"
         protocol: TCP
       - containerPort: 30002
-        hostPort: 15021
+        hostPort: 8443
         listenAddress: "127.0.0.1"
         protocol: TCP

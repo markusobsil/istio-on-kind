@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: web
+  labels:
+    app: web
+    istio-injection: enabled
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-content
+  namespace: web
+data:
+  index.html: |
+   <html>
+     <head>
+      <title>NGINX</title>
+     </head>
+    <body>
+    <p>Welcome to web</p>
+    </body>
+   </html>
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-conf
+  namespace: web
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes  3;
+    error_log  /var/log/nginx/error.log;
+    events {
+      worker_connections  1024;
+    }
+    http {
+      access_log	/var/log/nginx/access.log;
+      server {
+        server_name   nginx;
+        listen        80;
+        location      / {
+            root      /www;
+            index     index.html;
+        }
+      }
+    }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /etc/nginx
+          readOnly: true
+          name: web-conf
+        - mountPath: /var/log/nginx
+          name: log
+        - mountPath: /www
+          name: web-content
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: web-content
+        configMap:
+          name: web-content
+          items:
+            - key: index.html
+              path: index.html
+      - name: web-conf
+        configMap:
+          name: web-conf
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+      - name: log
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: web
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: web

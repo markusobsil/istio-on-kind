@@ -1,0 +1,30 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: web-external
+  namespace: web
+spec:
+  hosts:
+    - web.127.0.0.1.nip.io
+  gateways:
+    - istio-ingress/nip-io
+  http:
+    - route:
+        - destination:
+            host: web
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: web-mesh
+  namespace: web
+spec:
+  hosts:
+    - web
+  gateways:
+    - mesh
+  http:
+    - route:
+        - destination:
+            host: web

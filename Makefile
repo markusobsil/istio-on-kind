@@ -3,9 +3,10 @@ ISTIO_HELM_REPO="https://istio-release.storage.googleapis.com/charts"
 ISTIO_CP_NS="istio-system"
 ISTIO_INGRESS_NS="istio-ingress"
 ISTIO_EGRESS_NS="istio-egress"
+KUBECONFIG="./kubeconfig"
 
-.PHONY: all
-all: create-cluster deploy-istio
+.PHONY: setup
+setup: create-cluster deploy-istio
 
 create-cluster:
 	@scripts/print_header.sh "Create KinD cluster"
@@ -15,7 +16,7 @@ clean:
 	@scripts/print_header.sh "Delete KinD cluster"
 	@kind delete cluster --name istio
 
-deploy-istio: deploy-istio-cp deploy-istio-ingress configure-isto-ingress deploy-istio-egress
+deploy-istio: deploy-istio-cp add-istio-global-config deploy-istio-ingress configure-isto-ingress deploy-istio-egress
 
 deploy-istio-cp:
 	@scripts/print_header.sh "Deploy istio control plane"
@@ -28,6 +29,10 @@ check-istiod:
 	@scripts/print_header.sh "Checking status of istiod pods"
 	@scripts/check_pod.sh $(ISTIO_CP_NS) app=istiod
 
+add-istio-global-config:
+	@scripts/print_header.sh "Add Istio global configuration"
+	@kubectl apply --namespace $(ISTIO_CP_NS) -f manifests/istio/telemetry.yaml
+
 deploy-istio-ingress: check-istiod
 	@scripts/print_header.sh "Deploy istio ingress gateway"
 	@helm install istio-ingress --repo $(ISTIO_HELM_REPO) gateway --create-namespace --namespace $(ISTIO_INGRESS_NS) \
@@ -36,13 +41,13 @@ deploy-istio-ingress: check-istiod
 	@scripts/check_pod.sh $(ISTIO_INGRESS_NS) app=istio-ingress
 
 generate-ingress-cert:
-	@openssl req -x509 -nodes -days 7 -newkey rsa:2048 -keyout ingress.key -out ingress.crt -subj \
-        "/CN=Makefile/O=istio-on-kind" --addext "subjectAltName = DNS:ingress.127-0-0-1.nip.io, \
-        DNS:ingress.127.0.0.1.nip.io"
-	@kubectl create secret tls --namespace $(ISTIO_INGRESS_NS) gateway-tls --key ingress.key --cert ingress.crt
-	@rm ingress.key ingress.crt
+	@openssl req -x509 -nodes -days 7 -newkey rsa:2048 -keyout web.key -out web.crt -subj \
+        "/CN=Makefile/O=istio-on-kind" --addext "subjectAltName = DNS:web.127-0-0-1.nip.io"
+	@kubectl create secret tls --namespace $(ISTIO_INGRESS_NS) gateway-tls --key web.key --cert web.crt
+	@rm web.key web.crt
 
 configure-isto-ingress: generate-ingress-cert
+	@scripts/print_header.sh "Configure istio ingress gateway"
 	@kubectl apply --namespace $(ISTIO_INGRESS_NS) -f manifests/istio-ingress/gateway.yaml
 
 remove-istio-ingress:
@@ -64,3 +69,9 @@ remove-istio-cp:
 	@scripts/print_header.sh "Remove istio control plane"
 	@helm uninstall istiod --namespace istio-system
 	@helm uninstall istio-base --namespace istio-system
+
+deploy-webapp:
+	@scripts/print_header.sh "Deploy Web App"
+	kubectl apply -f manifests/web/web.yaml
+	kubectl apply -f manifests/web/vs.yaml
+
