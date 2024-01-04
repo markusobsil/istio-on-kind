@@ -71,7 +71,7 @@ remove-istio-cp:
 	@helm uninstall istio-base --namespace istio-system
 
 deploy-webapp:
-	@scripts/print_header.sh "Deploy Web App"
-	kubectl apply -f manifests/web/web.yaml
-	kubectl apply -f manifests/web/vs.yaml
-
+	@scripts/print_header.sh "Deploy Web App and cURL traffic generator"
+	@kubectl apply -f manifests/web/web.yaml
+	@kubectl apply -f manifests/web/vs.yaml
+	@kubectl apply -f manifests/traffic/traffic.yaml
