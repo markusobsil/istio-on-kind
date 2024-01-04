@@ -8,14 +8,14 @@ service:
       targetPort: 15021
       nodePort: 30000
     - name: http2
-      port: 80
+      port: 8080
       protocol: TCP
-      targetPort: 80
+      targetPort: 8080
       nodePort: 30001
     - name: https
-      port: 443
+      port: 8443
       protocol: TCP
-      targetPort: 443
+      targetPort: 8443
       nodePort: 30002
 autoscaling:
   enabled: false

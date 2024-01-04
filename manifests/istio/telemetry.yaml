@@ -1,0 +1,10 @@
+---
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: default
+spec:
+  accessLogging:
+    - disabled: false
+      providers:
+        - name: envoy
