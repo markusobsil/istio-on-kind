@@ -1,5 +1,17 @@
 ---
 pilot:
   autoscaleEnabled: false
+  seccompProfile:
+    type: RuntimeDefault
+  replicaCount: 1
+  podAnnotations:
+    prometheus.io/port: "15014"
+    prometheus.io/scrape: "true"
   nodeSelector:
     istio-controlplane: "true"
+meshConfig:
+    enablePrometheusMerge: true
+    accessLogFile: /dev/stdout
+    accessLogEncoding: 'JSON'
+global:
+  logAsJson: true

@@ -1,4 +1,4 @@
-ISTIO_VERSION="1.19.3"
+ISTIO_VERSION="1.22.1"
 ISTIO_HELM_REPO="https://istio-release.storage.googleapis.com/charts"
 ISTIO_CP_NS="istio-system"
 ISTIO_INGRESS_NS="istio-ingress"
