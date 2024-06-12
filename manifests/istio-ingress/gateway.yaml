@@ -9,7 +9,7 @@ spec:
     istio: ingress
   servers:
     - hosts:
-        - web.127.0.0.1.nip.io
+        - "*"
       port:
         name: https
         number: 8443
@@ -18,7 +18,7 @@ spec:
         mode: SIMPLE
         credentialName: gateway-tls
     - hosts:
-        - web.127.0.0.1.nip.io
+      - "*"
       port:
         name: http
         number: 8080
