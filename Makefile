@@ -16,7 +16,7 @@ clean:
 	@scripts/print_header.sh "Delete KinD cluster"
 	@kind delete cluster --name istio
 
-deploy-istio: deploy-istio-cp add-istio-global-config deploy-istio-ingress configure-isto-ingress deploy-istio-egress
+deploy-istio: deploy-istio-cp add-istio-global-config deploy-istio-ingress configure-isto-ingress
 
 deploy-istio-cp:
 	@scripts/print_header.sh "Deploy istio control plane"
@@ -54,7 +54,7 @@ remove-istio-ingress:
 	@scripts/print_header.sh "Remove istio ingress gateway"
 	@helm uninstall istio-ingress --namespace $(ISTIO_INGRESS_NS)
 
-deploy-istio-egress: check-istiod
+deploy-istio-egress:
 	@scripts/print_header.sh "Deploy istio egress gateway"
 	@helm install istio-egress --repo $(ISTIO_HELM_REPO) gateway --create-namespace --namespace $(ISTIO_EGRESS_NS) \
         --version $(ISTIO_VERSION)
