@@ -32,3 +32,6 @@ nodes:
         hostPort: 8443
         listenAddress: "127.0.0.1"
         protocol: TCP
+    extraMounts:
+      - hostPath: /tmp/worker-ztunnel/
+        containerPath: /var/run/ztunnel/

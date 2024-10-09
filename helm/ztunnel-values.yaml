@@ -1,0 +1,8 @@
+---
+env:
+  LOG_FORMAT: json
+resources:
+  requests:
+    cpu: 128m
+    memory: 128Mi
+logLevel: debug
