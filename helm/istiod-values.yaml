@@ -1,6 +1,4 @@
 ---
-global:
-  logAsJson: true
 pilot:
   autoscaleEnabled: false
   seccompProfile:
@@ -11,6 +9,8 @@ pilot:
     prometheus.io/scrape: "true"
   nodeSelector:
     istio-controlplane: "true"
+  env:
+    PILOT_ENABLE_AMBIENT: "true"
 meshConfig:
   enablePrometheusMerge: true
   accessLogFile: /dev/stdout
@@ -54,3 +54,6 @@ meshConfig:
       "hostname": "%HOSTNAME%",
       "upstream_tls_version": "%UPSTREAM_TLS_VERSION%"
     }
+  defaultConfig:
+    proxyMetadata:
+      ISTIO_META_ENABLE_HBONE: "true"

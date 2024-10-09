@@ -1,0 +1,4 @@
+---
+global:
+  logAsJson: true
+  variant: distroless
