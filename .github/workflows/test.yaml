@@ -23,7 +23,7 @@ jobs:
           cp ~/tmp/linux-amd64/helm ~/bin/helm
           chmod +x ~/bin/helm
       - name: Start cluster
-        run: make setup
+        run: make
       - name: Start web app and test connection
         run: |
           make deploy-webapp
