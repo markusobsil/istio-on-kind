@@ -1,4 +1,4 @@
-ISTIO_VERSION="1.23.2"
+ISTIO_VERSION="1.25.2"
 ISTIO_HELM_REPO="https://istio-release.storage.googleapis.com/charts"
 ISTIO_CP_NS="istio-system"
 ISTIO_INGRESS_NS="istio-ingress"
@@ -25,6 +25,7 @@ deploy-controlplane:
 		--values helm/istiod-values.yaml --values helm/istio-global-values.yaml
 	@scripts/print_header.sh "Add Istio global configuration"
 	@kubectl apply --namespace $(ISTIO_CP_NS) -f manifests/istio/telemetry.yaml
+	@kubectl apply --namespace $(ISTIO_CP_NS) -f manifests/istio/peerauthentication.yaml
 
 deploy-ambient: check-istiod
 	@scripts/print_header.sh "Deploy istio CNI"

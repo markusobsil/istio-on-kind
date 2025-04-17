@@ -7,6 +7,15 @@ metadata:
     istio-injection: enabled
 
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  creationTimestamp: null
+  name: traffic
+  namespace: traffic
+automountServiceAccountToken: false
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,8 +31,9 @@ spec:
       labels:
         app: traffic
     spec:
+      serviceAccountName: traffic
       containers:
       - name: curl
         image: curlimages/curl:8.5.0
         command: ["/bin/sh", "-c", "--"]
-        args: ["while true; do curl -I http://web.web 2> /dev/null; sleep 3; done;"]
+        args: ["while true; do curl -m 2 -I http://web.web.svc.cluster.local 2> /dev/null; sleep 2; done;"]

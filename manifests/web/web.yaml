@@ -8,6 +8,15 @@ metadata:
 
 ---
 apiVersion: v1
+kind: ServiceAccount
+metadata:
+  creationTimestamp: null
+  name: web
+  namespace: web
+automountServiceAccountToken: false
+
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: web-content
@@ -41,7 +50,7 @@ data:
       access_log	/var/log/nginx/access.log;
       server {
         server_name   nginx;
-        listen        80;
+        listen        8080;
         location      / {
             root      /www;
             index     index.html;
@@ -56,7 +65,7 @@ metadata:
   name: web
   namespace: web
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: web
@@ -65,11 +74,12 @@ spec:
       labels:
         app: web
     spec:
+      serviceAccountName: web
       containers:
       - name: nginx
         image: nginx
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         volumeMounts:
         - mountPath: /etc/nginx
           readOnly: true
@@ -81,13 +91,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 8080
           initialDelaySeconds: 15
           periodSeconds: 20
         readinessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
       volumes:
@@ -116,6 +126,8 @@ spec:
   type: ClusterIP
   ports:
   - port: 80
-    targetPort: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http-80
   selector:
     app: web
