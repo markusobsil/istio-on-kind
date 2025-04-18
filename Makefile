@@ -19,21 +19,21 @@ clean:
 
 deploy-controlplane:
 	@scripts/print_header.sh "Deploy istio control plane"
-	@helm install istio-base --repo $(ISTIO_HELM_REPO) base --create-namespace --namespace $(ISTIO_CP_NS) \
+	@helm upgrade --install istio-base --repo $(ISTIO_HELM_REPO) base --create-namespace --namespace $(ISTIO_CP_NS) \
         --version $(ISTIO_VERSION) --values helm/istio-global-values.yaml
-	@helm install istiod --repo $(ISTIO_HELM_REPO) istiod --namespace $(ISTIO_CP_NS) --version $(ISTIO_VERSION) \
-		--values helm/istiod-values.yaml --values helm/istio-global-values.yaml
+	@helm upgrade --install istiod --repo $(ISTIO_HELM_REPO) istiod --namespace $(ISTIO_CP_NS) \
+        --version $(ISTIO_VERSION) --values helm/istiod-values.yaml --values helm/istio-global-values.yaml
 	@scripts/print_header.sh "Add Istio global configuration"
 	@kubectl apply --namespace $(ISTIO_CP_NS) -f manifests/istio/telemetry.yaml
 	@kubectl apply --namespace $(ISTIO_CP_NS) -f manifests/istio/peerauthentication.yaml
 
 deploy-ambient: check-istiod
 	@scripts/print_header.sh "Deploy istio CNI"
-	@helm install istio-cni --repo $(ISTIO_HELM_REPO) cni --namespace $(ISTIO_CP_NS) --version $(ISTIO_VERSION) \
-		--values helm/istio-cni-values.yaml --values helm/istio-global-values.yaml
+	@helm upgrade --install istio-cni --repo $(ISTIO_HELM_REPO) cni --namespace $(ISTIO_CP_NS) \
+        --version $(ISTIO_VERSION) --values helm/istio-cni-values.yaml --values helm/istio-global-values.yaml
 	@scripts/print_header.sh "Deploy ztunnel"
-	@helm install ztunnel --repo $(ISTIO_HELM_REPO) ztunnel --namespace $(ISTIO_CP_NS) --version $(ISTIO_VERSION) \
-		--values helm/ztunnel-values.yaml --values helm/istio-global-values.yaml
+	@helm upgrade --install ztunnel --repo $(ISTIO_HELM_REPO) ztunnel --namespace $(ISTIO_CP_NS) \
+        --version $(ISTIO_VERSION) --values helm/ztunnel-values.yaml --values helm/istio-global-values.yaml
 
 check-istiod:
 	@scripts/print_header.sh "Checking status of istiod pods"
@@ -41,8 +41,9 @@ check-istiod:
 
 deploy-ingress: check-istiod
 	@scripts/print_header.sh "Deploy istio ingress gateway"
-	@helm install istio-ingress --repo $(ISTIO_HELM_REPO) gateway --create-namespace --namespace $(ISTIO_INGRESS_NS) \
-		--version $(ISTIO_VERSION) --values helm/istio-ingress-values.yaml --values helm/istio-global-values.yaml
+	@helm upgrade --install istio-ingress --repo $(ISTIO_HELM_REPO) gateway --create-namespace \
+        --namespace $(ISTIO_INGRESS_NS) --version $(ISTIO_VERSION) --values helm/istio-ingress-values.yaml \
+        --values helm/istio-global-values.yaml
 	@scripts/print_header.sh "Checking status of istio-ingress pods"
 	@scripts/check_pod.sh $(ISTIO_INGRESS_NS) app=istio-ingress
 	@openssl req -x509 -nodes -days 7 -newkey rsa:2048 -keyout web.key -out web.crt -subj \
@@ -54,8 +55,8 @@ deploy-ingress: check-istiod
 
 deploy-egress:
 	@scripts/print_header.sh "Deploy istio egress gateway"
-	@helm install istio-egress --repo $(ISTIO_HELM_REPO) gateway --create-namespace --namespace $(ISTIO_EGRESS_NS) \
-        --version $(ISTIO_VERSION) --values helm/istio-global-values.yaml
+	@helm upgrade --install istio-egress --repo $(ISTIO_HELM_REPO) gateway --create-namespace \
+        --namespace $(ISTIO_EGRESS_NS) --version $(ISTIO_VERSION) --values helm/istio-global-values.yaml
 	@scripts/print_header.sh "Checking status of istio-egress pods"
 	@scripts/check_pod.sh $(ISTIO_EGRESS_NS) app=istio-egress
 
